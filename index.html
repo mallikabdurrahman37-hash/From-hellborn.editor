@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3LLB0RN // SYSTEM OVERRIDE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+
+        :root {
+            --primary: #0f0;
+            --secondary: #003b00;
+            --danger: #ff003c;
+            --bg: #050505;
+            --glass: rgba(0, 20, 0, 0.7);
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--primary);
+            font-family: 'Share Tech Mono', monospace;
+            overflow-x: hidden;
+            margin: 0;
+            cursor: crosshair;
+        }
+
+        /* --- ADVANCED VISUAL FX --- */
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.3));
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 99;
+        }
+        
+        .crt-flicker {
+            animation: flicker 0.15s infinite;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.95; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0.9; }
+        }
+
+        /* GLITCH TEXT */
+        .glitch-text {
+            position: relative;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+        }
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg);
+        }
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--danger);
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: -2px 0 #00ffff;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim2 5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip: rect(10px, 9999px, 30px, 0); }
+            20% { clip: rect(80px, 9999px, 10px, 0); }
+            100% { clip: rect(50px, 9999px, 90px, 0); }
+        }
+        @keyframes glitch-anim2 {
+            0% { clip: rect(60px, 9999px, 100px, 0); }
+            20% { clip: rect(20px, 9999px, 50px, 0); }
+            100% { clip: rect(10px, 9999px, 80px, 0); }
+        }
+
+        /* --- MEMBER CARDS --- */
+        .hacker-card {
+            background: rgba(0, 10, 0, 0.8);
+            border: 1px solid #003300;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .hacker-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+            transform: translateY(-5px);
+            background: rgba(0, 30, 0, 0.9);
+        }
+        .hacker-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(0, 255, 0, 0.2), transparent);
+            transform: skewX(-25deg);
+            transition: 0.5s;
+        }
+        .hacker-card:hover::before {
+            left: 100%;
+        }
+
+        /* --- TERMINAL WINDOW --- */
+        .terminal-window {
+            background: rgba(10, 10, 10, 0.95);
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        /* --- LOCK SCREEN --- */
+        #lock-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: black;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .access-btn {
+            background: transparent;
+            border: 2px solid var(--danger);
+            color: var(--danger);
+            padding: 15px 40px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .access-btn:hover {
+            background: var(--danger);
+            color: black;
+            box-shadow: 0 0 30px var(--danger);
+        }
+
+        /* Utility */
+        .text-neon { text-shadow: 0 0 8px var(--primary); }
+        .text-danger-glow { text-shadow: 0 0 8px var(--danger); }
+        .hidden { display: none !important; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #004400; }
+    </style>
+</head>
+<body>
+
+    <!-- VISUAL FX LAYERS -->
+    <div class="scanlines"></div>
+    <div id="noise" class="fixed inset-0 opacity-5 pointer-events-none z-40 bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAA5OTkAAABERERmZmYzMzOZmZlmZmYzMzOZ2fFNAAAAB3RSTlMABDQzMzMzMzM0AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAJklEQVQ4jWNgGAWjYBSMglEwCkbBKBi9gB0Yh8Lg8CgYBaNgFIwCAOxAAIdsD7zsAAAAAElFTkSuQmCC')]"></div>
+
+    <!-- LOCK SCREEN (TRICKY PART) -->
+    <div id="lock-screen">
+        <div class="text-center">
+            <i class="fas fa-lock text-6xl text-red-600 mb-6 animate-pulse"></i>
+            <h1 class="text-4xl font-bold text-red-600 mb-2 font-[Orbitron]">SYSTEM LOCKED</h1>
+            <p class="text-gray-400 mb-8 font-mono text-sm">ENCRYPTED // BIOMETRIC SCAN REQUIRED</p>
+            
+            <button id="hack-btn" class="access-btn" onclick="initiateHack()">
+                <i class="fas fa-terminal mr-2"></i> INITIATE BRUTE FORCE
+            </button>
+            
+            <div id="hack-progress" class="hidden mt-6 w-64 mx-auto">
+                <div class="text-left text-xs text-green-500 font-mono mb-1" id="hack-text">Bypassing Firewall...</div>
+                <div class="w-full h-2 bg-gray-900 border border-green-700">
+                    <div id="hack-bar" class="h-full bg-green-500 w-0"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN INTERFACE -->
+    <main id="main-ui" class="hidden min-h-screen pb-20">
+        
+        <!-- HEADER -->
+        <header class="p-4 border-b border-green-900 bg-black/80 sticky top-0 z-50 backdrop-blur-sm flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 border border-green-500 rounded flex items-center justify-center bg-green-900/20">
+                    <i class="fas fa-skull text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-wider">HELLBORN.EDITOR</h1>
+                    <p class="text-[10px] text-gray-500">ADMIN // ROOT ACCESS</p>
+                </div>
+            </div>
+            <div class="hidden md:block text-right">
+                <p class="text-xs text-red-500 animate-pulse">● TARGET ACQUIRED</p>
+                <p class="text-[10px] text-gray-600">IP: 192.168.X.X (HIDDEN)</p>
+            </div>
+        </header>
+
+        <!-- HERO SECTION -->
+        <section class="container mx-auto px-4 py-12 text-center">
+            <div class="inline-block border border-green-500/30 p-8 bg-black/60 relative">
+                <div class="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-green-500"></div>
+                <div class="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-green-500"></div>
+                <div class="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-green-500"></div>
+                <div class="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-green-500"></div>
+                
+                <h2 class="text-green-500 text-sm tracking-[0.5em] mb-2">WARNING: HIGH SKILL LEVEL</h2>
+                <h1 class="glitch-text text-5xl md:text-8xl font-black text-white mb-4" data-text="HELLBORN">HELLBORN</h1>
+                
+                <div class="flex flex-wrap justify-center gap-4 mt-6 text-sm font-bold">
+                    <span class="bg-red-900/30 text-red-500 border border-red-500/50 px-3 py-1">
+                        <i class="fas fa-code mr-2"></i>PROGRAMMER
+                    </span>
+                    <span class="bg-purple-900/30 text-purple-400 border border-purple-500/50 px-3 py-1">
+                        <i class="fas fa-video mr-2"></i>VFX EDITOR
+                    </span>
+                    <span class="bg-blue-900/30 text-blue-400 border border-blue-500/50 px-3 py-1">
+                        <i class="fas fa-user-secret mr-2"></i>ETHICAL HACKER
+                    </span>
+                </div>
+            </div>
+
+            <!-- Bengali Flex Quote -->
+            <div class="mt-12 max-w-2xl mx-auto">
+                <p class="text-gray-400 text-sm mb-2"><i class="fas fa-bullhorn mr-2"></i>SYSTEM BROADCAST:</p>
+                <div class="text-xl md:text-2xl font-[Orbitron] text-white leading-relaxed border-l-4 border-red-600 pl-4 py-2 bg-gradient-to-r from-red-900/20 to-transparent text-left">
+                    "Normal manusher <span class="text-green-400">Computer</span> hang hoy,<br>
+                    Ar amar code dekhe <span class="text-red-500 font-bold">Server Crash</span> hoy.<br>
+                    <span class="text-sm text-gray-400 font-mono mt-2 block">> HELLBORN SQUAD: DON'T MESS WITH US.</span>"
+                </div>
+            </div>
+        </section>
+
+        <!-- SQUAD SECTION -->
+        <section class="container mx-auto px-4 py-8">
+            <div class="flex items-end justify-between mb-8 border-b border-gray-800 pb-2">
+                <h3 class="text-2xl font-bold text-white"><i class="fas fa-users mr-2"></i>DETECTED ENTITIES (The Squad)</h3>
+                <span class="text-xs text-green-500 animate-pulse">LIVE TRACKING ACTIVE</span>
+            </div>
+
+            <div id="squad-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Javascript Injected -->
+            </div>
+        </section>
+
+        <!-- TERMINAL INTERACTION -->
+        <section class="container mx-auto px-4 mt-8 mb-20">
+            <div class="terminal-window rounded p-1">
+                <div class="bg-gray-800 px-3 py-1 text-xs text-gray-400 flex justify-between rounded-t">
+                    <span>root@hellborn:~</span>
+                    <div class="flex gap-1">
+                        <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                        <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+                        <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                    </div>
+                </div>
+                <div class="bg-black/90 p-4 h-48 overflow-y-auto font-mono text-sm" id="terminal-output">
+                    <div class="text-gray-500">Last login: Today from 127.0.0.1</div>
+                    <div class="text-green-500">Welcome to Hellborn OS v9.0</div>
+                    <div class="text-white">Type 'help' to see available commands.</div>
+                    <br>
+                </div>
+                <div class="bg-black p-2 border-t border-gray-800 flex">
+                    <span class="text-green-500 mr-2">root@hellborn:~$</span>
+                    <input type="text" id="terminal-input" class="bg-transparent border-none outline-none text-white flex-grow font-mono" autocomplete="off" autofocus>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER FIXED -->
+    <div class="fixed bottom-0 left-0 w-full bg-black/90 border-t border-green-900 p-1 flex justify-between items-center px-4 text-[10px] text-gray-500 z-50">
+        <span>POWERED BY HELLBORN.CODE</span>
+        <span>STATUS: <span class="text-green-500">UNDETECTED</span></span>
+    </div>
+
+    <script>
+        // --- 1. SQUAD DATA (FROM YOUR SCREENSHOTS) ---
+        // I extracted these manually from the images provided.
+        const squad = [
+            { name: "Hellborn.Editor", role: "ADMIN / CREATOR", level: "GOD" },
+            { name: "Crazy_Rasha_703", role: "ADMIN", level: "ELITE" },
+            { name: "Hridoy_Khan_360", role: "2ND ADMIN", level: "ELITE" },
+            { name: "Abbu_is_back_06", role: "MEMBER", level: "HIGH" },
+            { name: "Queen_Esha", role: "MEMBER", level: "HIGH" },
+            { name: "Prince_Riyaz_99", role: "MEMBER", level: "MID" },
+            { name: "Sahil_Pathan0786", role: "MEMBER", level: "MID" },
+            { name: "Official_Toufik", role: "MEMBER", level: "MID" },
+            { name: "Sultan_Siddique", role: "MEMBER", level: "MID" },
+            { name: "Samina_Khan", role: "MEMBER", level: "MID" },
+            { name: "Mr_Sajim_King", role: "MEMBER", level: "MID" },
+            { name: "Zara_Queen", role: "MEMBER", level: "MID" },
+            { name: "Itz_Abir_King", role: "MEMBER", level: "MID" },
+            { name: "Shayan_Newus", role: "MEMBER", level: "LOW" },
+            { name: "Veer_Ujjwal", role: "MEMBER", level: "LOW" },
+            { name: "User_Ayesha", role: "MEMBER", level: "LOW" },
+            { name: "Night_Mafiya", role: "MEMBER", level: "LOW" },
+            { name: "Sk_Rumiraja", role: "MEMBER", level: "LOW" },
+            { name: "Alone_Boy_S", role: "MEMBER", level: "LOW" }
+        ];
+
+        // --- 2. HACK SEQUENCE (LOCK SCREEN) ---
+        function initiateHack() {
+            const btn = document.getElementById('hack-btn');
+            const progress = document.getElementById('hack-progress');
+            const bar = document.getElementById('hack-bar');
+            const text = document.getElementById('hack-text');
+            const lockScreen = document.getElementById('lock-screen');
+            const mainUI = document.getElementById('main-ui');
+
+            btn.style.display = 'none';
+            progress.classList.remove('hidden');
+
+            let width = 0;
+            const messages = [
+                "Injecting SQL Payload...",
+                "Bypassing 2FA...",
+                "Cracking Hash Keys...",
+                "Accessing Instagram Database...",
+                "Decryption Complete."
+            ];
+
+            const interval = setInterval(() => {
+                width += Math.random() * 5;
+                if(width > 100) width = 100;
+                
+                bar.style.width = width + '%';
+                
+                // Change text based on progress
+                if(width < 30) text.innerText = messages[0];
+                else if(width < 50) text.innerText = messages[1];
+                else if(width < 70) text.innerText = messages[2];
+                else if(width < 90) text.innerText = messages[3];
+                else text.innerText = messages[4];
+
+                if(width >= 100) {
+                    clearInterval(interval);
+                    text.innerText = "ACCESS GRANTED";
+                    text.classList.remove('text-green-500');
+                    text.classList.add('text-red-500', 'font-bold', 'blink');
+                    
+                    setTimeout(() => {
+                        lockScreen.style.opacity = '0';
+                        setTimeout(() => {
+                            lockScreen.style.display = 'none';
+                            mainUI.classList.remove('hidden');
+                            renderSquad();
+                        }, 500);
+                    }, 800);
+                }
+            }, 100);
+        }
+
+        // --- 3. RENDER SQUAD GRID ---
+        function renderSquad() {
+            const grid = document.getElementById('squad-grid');
+            grid.innerHTML = '';
+
+            squad.forEach(member => {
+                const isHellborn = member.name.includes('Hellborn');
+                const card = document.createElement('div');
+                card.className = `hacker-card p-4 relative group cursor-pointer ${isHellborn ? 'border-red-600 bg-red-900/10' : ''}`;
+                
+                // Generate fake IP
+                const fakeIP = `192.168.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`;
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-xs ${isHellborn ? 'text-red-500' : 'text-gray-500'} font-mono">${fakeIP}</div>
+                        <i class="fas ${isHellborn ? 'fa-crown text-red-500' : 'fa-user-circle text-green-700'}"></i>
+                    </div>
+                    <h4 class="text-lg font-bold text-white truncate group-hover:text-green-400 transition-colors">${member.name}</h4>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-[10px] px-2 py-0.5 border ${isHellborn ? 'border-red-600 text-red-500' : 'border-green-800 text-gray-400'} rounded">${member.role}</span>
+                        <span class="text-[10px] text-gray-600">THREAT: ${member.level}</span>
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-full h-0.5 bg-green-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- 4. TERMINAL LOGIC ---
+        const input = document.getElementById('terminal-input');
+        const output = document.getElementById('terminal-output');
+
+        input.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const cmd = this.value.toLowerCase().trim();
+                printLine(`root@hellborn:~$ ${this.value}`, 'text-white');
+                
+                if (cmd === 'help') {
+                    printLine('Available commands: status, hack, flex, clear, team', 'text-yellow-400');
+                } else if (cmd === 'status') {
+                    printLine('SYSTEM INTEGRITY: 100%', 'text-green-500');
+                    printLine('ADMIN: ONLINE', 'text-green-500');
+                } else if (cmd === 'hack') {
+                    printLine('INITIATING HACK...', 'text-red-500');
+                    setTimeout(() => printLine('ACCESS DENIED. YOU ARE NOT HELLBORN.', 'text-red-500 font-bold'), 1000);
+                } else if (cmd === 'flex') {
+                    printLine('"Bangali chele, system hack kori shokhe."', 'text-cyan-400 italic');
+                } else if (cmd === 'team') {
+                    printLine(`Loaded ${squad.length} members from database.`, 'text-blue-400');
+                } else if (cmd === 'clear') {
+                    output.innerHTML = '';
+                } else {
+                    printLine(`Command not found: ${cmd}`, 'text-gray-500');
+                }
+                
+                this.value = '';
+                output.scrollTop = output.scrollHeight;
+            }
+        });
+
+        function printLine(text, className) {
+            const div = document.createElement('div');
+            div.className = className || 'text-gray-300';
+            div.textContent = text;
+            output.appendChild(div);
+        }
+
+    </script>
+</body>
+</html>
+
+
